@@ -1,0 +1,17 @@
+name: Build and check
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet build WeAreCars.sln -c Release
+      - run: dotnet run --project tests/WeAreCars.Checks -c Release --no-build
+      - run: dotnet publish src/WeAreCars.App -c Release -r win-x64 --self-contained true -o artifacts/WeAreCars
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WeAreCars-Windows-x64
+          path: artifacts/WeAreCars
